@@ -1,0 +1,28 @@
+{
+  "name": "musicvibe-ddd",
+  "version": "1.0.0",
+  "description": "MusicVibe reorganizado em DDD + Arquitetura Hexagonal (N2 - Projeto e Arquitetura de Software)",
+  "main": "src/main/server.js",
+  "scripts": {
+    "start": "node src/main/server.js",
+    "worker:notifications": "node src/workers/notification.worker.js",
+    "worker:media": "node src/workers/media-processing.worker.js",
+    "worker:stats": "node src/workers/track-stats.worker.js",
+    "outbox:relay": "node src/workers/outbox-relay.worker.js"
+  },
+  "author": "Weslem Santos",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.12.0",
+    "multer": "^2.0.1",
+    "mysql2": "^3.12.0",
+    "sequelize": "^6.37.5"
+  }
+}

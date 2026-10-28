@@ -1,0 +1,16 @@
+digraph G { rankdir=LR; bgcolor="white"; pad=0.3; nodesep=0.55; ranksep=0.75; splines=true; labelloc=t; fontname="Inter"; fontsize=16; label=<<B>C4 — Diagrama Dinâmico: "Curtir faixa" com Transactional Outbox</B>>;
+u [shape=box style="filled,rounded" fillcolor="#08427b" color="#073b6f" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Ouvinte</B>>];
+api [shape=box style="filled,rounded" fillcolor="#438dd5" color="#3c7fc0" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>API REST</B><BR/><FONT POINT-SIZE="9">[Express]</FONT>>];
+db [shape=cylinder style=filled fillcolor="#438dd5" color="#3c7fc0" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>MySQL</B><BR/><FONT POINT-SIZE="9">[likes + outbox_events]</FONT>>];
+relay [shape=box style="filled,rounded" fillcolor="#2e7d32" color="#1b5e20" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Outbox Relay</B><BR/><FONT POINT-SIZE="9">[worker]</FONT>>];
+mq [shape=box3d style=filled fillcolor="#2e7d32" color="#1b5e20" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>RabbitMQ</B><BR/><FONT POINT-SIZE="9">[topic exchange]</FONT>>];
+ws [shape=box style="filled,rounded" fillcolor="#2e7d32" color="#1b5e20" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Worker Estatísticas</B>>];
+wn [shape=box style="filled,rounded" fillcolor="#2e7d32" color="#1b5e20" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Worker Notificações</B>>];
+u -> api [label=<<FONT POINT-SIZE="9">1. POST /tracks/:id/toggle-like</FONT><BR/><FONT POINT-SIZE="8">[HTTPS]</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+api -> db [label=<<FONT POINT-SIZE="9">2. INSERT likes + INSERT outbox_events<BR/>(mesma transação) → 201</FONT><BR/><FONT POINT-SIZE="8">[SQL]</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+relay -> db [label=<<FONT POINT-SIZE="9">3. SELECT eventos pendentes</FONT><BR/><FONT POINT-SIZE="8">[SQL]</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+relay -> mq [label=<<FONT POINT-SIZE="9">4. publish engagement.track.liked</FONT><BR/><FONT POINT-SIZE="8">[AMQP]</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+mq -> ws [label=<<FONT POINT-SIZE="9">5a. entrega (fila catalog.track-stats)</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+mq -> wn [label=<<FONT POINT-SIZE="9">5b. entrega (fila notification.artist-inbox)</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+ws -> db [label=<<FONT POINT-SIZE="9">6. likes_count + 1 (idempotente)</FONT><BR/><FONT POINT-SIZE="8">[SQL]</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+}

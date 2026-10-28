@@ -1,0 +1,35 @@
+digraph G { rankdir=LR; bgcolor="white"; pad=0.3; nodesep=0.55; ranksep=0.75; splines=true; labelloc=t; fontname="Inter"; fontsize=16; label=<<B>C4 — Nível 3: Componentes da API com a camada de mensageria</B>>;
+spa [shape=box style="filled,rounded" fillcolor="#438dd5" color="#3c7fc0" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Aplicação Web (SPA)</B><BR/><FONT POINT-SIZE="9">[Vue 3]</FONT>>];
+subgraph cluster_api { label=<<B>Container: API REST (Node.js + Express)</B>> fontname="Inter" fontsize=11 fontcolor="#438dd5" style="dashed,rounded" color="#438dd5" margin=16;
+http [shape=box style="filled,rounded" fillcolor="#85bbf0" color="#78a8d8" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Adaptadores HTTP</B><BR/><FONT POINT-SIZE="9">[Express Router + Controllers]</FONT><BR/><BR/><FONT POINT-SIZE="9">Rotas, validação e tradução<BR/>DomainError → status HTTP</FONT>>];
+uc [shape=box style="filled,rounded" fillcolor="#85bbf0" color="#78a8d8" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Casos de Uso</B><BR/><FONT POINT-SIZE="9">[Application layer]</FONT><BR/><BR/><FONT POINT-SIZE="9">ToggleLike, PostComment,<BR/>UploadTrack, DeleteTrack...</FONT>>];
+dom [shape=box style="filled,rounded" fillcolor="#85bbf0" color="#78a8d8" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Modelo de Domínio</B><BR/><FONT POINT-SIZE="9">[Agregados + Eventos]</FONT><BR/><BR/><FONT POINT-SIZE="9">Track, Like, Comment, User<BR/>registram eventos de domínio</FONT>>];
+repo [shape=box style="filled,rounded" fillcolor="#85bbf0" color="#78a8d8" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Repositórios</B><BR/><FONT POINT-SIZE="9">[Sequelize adapters]</FONT><BR/><BR/><FONT POINT-SIZE="9">TrackRepository,<BR/>LikeRepository...</FONT>>];
+uow [shape=box style="filled,rounded" fillcolor="#85bbf0" color="#78a8d8" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Unit of Work</B><BR/><FONT POINT-SIZE="9">[sequelize.transaction]</FONT><BR/><BR/><FONT POINT-SIZE="9">Delimita a transação</FONT>>];
+subgraph cluster_msg { label=<<B>Camada de Comunicação (Mensageria) — NOVA</B>> fontname="Inter" fontsize=11 fontcolor="#2e7d32" style="dashed,rounded" color="#2e7d32" margin=16;
+bus [shape=box style="filled,rounded" fillcolor="#a5d6a7" color="#81c784" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>EventBus (porta)</B><BR/><FONT POINT-SIZE="9">[Interface]</FONT><BR/><BR/><FONT POINT-SIZE="9">publish(events, tx)</FONT>>];
+outbox [shape=box style="filled,rounded" fillcolor="#a5d6a7" color="#81c784" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>OutboxEventBus</B><BR/><FONT POINT-SIZE="9">[Adapter]</FONT><BR/><BR/><FONT POINT-SIZE="9">INSERT em outbox_events<BR/>na transação corrente</FONT>>];
+relay [shape=box style="filled,rounded" fillcolor="#a5d6a7" color="#81c784" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>OutboxRelay</B><BR/><FONT POINT-SIZE="9">[Worker / setInterval]</FONT><BR/><BR/><FONT POINT-SIZE="9">Lê pendentes e marca<BR/>published_at após confirm</FONT>>];
+pub [shape=box style="filled,rounded" fillcolor="#a5d6a7" color="#81c784" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>RabbitMqPublisher</B><BR/><FONT POINT-SIZE="9">[amqplib]</FONT><BR/><BR/><FONT POINT-SIZE="9">Exchange topic musicvibe.events;<BR/>persistent + publisher confirms</FONT>>];
+cons [shape=box style="filled,rounded" fillcolor="#a5d6a7" color="#81c784" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>RabbitMqConsumer</B><BR/><FONT POINT-SIZE="9">[amqplib]</FONT><BR/><BR/><FONT POINT-SIZE="9">Ack manual, retry com backoff,<BR/>DLQ, idempotência (eventId)</FONT>>];
+topo [shape=box style="filled,rounded" fillcolor="#a5d6a7" color="#81c784" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Topologia</B><BR/><FONT POINT-SIZE="9">[topology.js]</FONT><BR/><BR/><FONT POINT-SIZE="9">Exchanges, filas, bindings, DLX</FONT>>];
+}
+}
+db [shape=cylinder style=filled fillcolor="#438dd5" color="#3c7fc0" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>MySQL</B><BR/><FONT POINT-SIZE="9">[Banco de dados]</FONT>>];
+mq [shape=box3d style=filled fillcolor="#2e7d32" color="#1b5e20" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>RabbitMQ</B><BR/><FONT POINT-SIZE="9">[Broker]</FONT>>];
+spa -> http [label=<<FONT POINT-SIZE="9">JSON/HTTPS</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+http -> uc [label=<<FONT POINT-SIZE="9">Invoca</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+uc -> dom [label=<<FONT POINT-SIZE="9">Executa regras</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+uc -> repo [label=<<FONT POINT-SIZE="9">Persiste agregados</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+uc -> uow [label=<<FONT POINT-SIZE="9">Abre transação</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+uc -> bus [label=<<FONT POINT-SIZE="9">Publica pullEvents()</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+bus -> outbox [label=<<FONT POINT-SIZE="9">Implementada por</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+repo -> db [label=<<FONT POINT-SIZE="9">SQL</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+outbox -> db [label=<<FONT POINT-SIZE="9">INSERT outbox_events</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+relay -> db [label=<<FONT POINT-SIZE="9">SELECT pendentes</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+relay -> pub [label=<<FONT POINT-SIZE="9">Publica</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+pub -> mq [label=<<FONT POINT-SIZE="9">basic.publish</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+topo -> mq [label=<<FONT POINT-SIZE="9">assertExchange/Queue</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+mq -> cons [label=<<FONT POINT-SIZE="9">basic.consume</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+cons -> uc [label=<<FONT POINT-SIZE="9">Chama caso de uso do<BR/>contexto consumidor</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+}

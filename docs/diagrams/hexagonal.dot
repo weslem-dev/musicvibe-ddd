@@ -1,0 +1,21 @@
+digraph G { rankdir=TB; bgcolor="white"; pad=0.3; nodesep=0.55; ranksep=0.75; splines=true; labelloc=t; fontname="Inter"; fontsize=16; label=<<B>Arquitetura Hexagonal (Ports &amp; Adapters) aplicada a cada contexto</B>>;
+subgraph cluster_core { label=<<B>Núcleo (hexágono) — por bounded context</B>> fontname="Inter" fontsize=11 fontcolor="#1168bd" style="dashed,rounded" color="#1168bd" margin=16;
+d [shape=box style="filled,rounded" fillcolor="#85bbf0" color="#78a8d8" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Domínio</B><BR/><FONT POINT-SIZE="9">[Entidades, VOs, Agregados,<BR/>Eventos, Regras]</FONT><BR/><BR/><FONT POINT-SIZE="9">Sem dependência de framework</FONT>>];
+a [shape=box style="filled,rounded" fillcolor="#85bbf0" color="#78a8d8" fontcolor="#000000" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Aplicação</B><BR/><FONT POINT-SIZE="9">[Casos de uso (portas de entrada)<BR/>+ portas de saída]</FONT><BR/><BR/><FONT POINT-SIZE="9">Orquestra domínio e portas</FONT>>];
+}
+in1 [shape=box style="filled,rounded" fillcolor="#438dd5" color="#3c7fc0" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>HTTP (Express)</B><BR/><FONT POINT-SIZE="9">[Adaptador de entrada]</FONT><BR/><BR/><FONT POINT-SIZE="9">Routes, Controllers, Validators</FONT>>];
+in2 [shape=box style="filled,rounded" fillcolor="#2e7d32" color="#1b5e20" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Consumers AMQP</B><BR/><FONT POINT-SIZE="9">[Adaptador de entrada]</FONT><BR/><BR/><FONT POINT-SIZE="9">RabbitMqConsumer</FONT>>];
+o1 [shape=box style="filled,rounded" fillcolor="#438dd5" color="#3c7fc0" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Persistência</B><BR/><FONT POINT-SIZE="9">[Adaptador de saída]</FONT><BR/><BR/><FONT POINT-SIZE="9">Sequelize/MySQL Repositories</FONT>>];
+o2 [shape=box style="filled,rounded" fillcolor="#438dd5" color="#3c7fc0" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Storage</B><BR/><FONT POINT-SIZE="9">[Adaptador de saída]</FONT><BR/><BR/><FONT POINT-SIZE="9">LocalMediaStorage (fs)</FONT>>];
+o3 [shape=box style="filled,rounded" fillcolor="#438dd5" color="#3c7fc0" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Segurança</B><BR/><FONT POINT-SIZE="9">[Adaptador de saída]</FONT><BR/><BR/><FONT POINT-SIZE="9">Bcrypt, JWT</FONT>>];
+o4 [shape=box style="filled,rounded" fillcolor="#2e7d32" color="#1b5e20" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>Mensageria</B><BR/><FONT POINT-SIZE="9">[Adaptador de saída]</FONT><BR/><BR/><FONT POINT-SIZE="9">OutboxEventBus → RabbitMQ</FONT>>];
+in1 -> a [label=<<FONT POINT-SIZE="9">chama</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+in2 -> a [label=<<FONT POINT-SIZE="9">chama</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+a -> d [label=<<FONT POINT-SIZE="9">usa</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=solid arrowsize=0.7];
+o1 -> a [label=<<FONT POINT-SIZE="9">implementa porta</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+o2 -> a [label=<<FONT POINT-SIZE="9">implementa porta</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+o3 -> a [label=<<FONT POINT-SIZE="9">implementa porta</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+o4 -> a [label=<<FONT POINT-SIZE="9">implementa porta</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+{rank=same; in1; in2}
+{rank=same; o1; o2; o3; o4}
+}

@@ -1,0 +1,14 @@
+digraph G { rankdir=LR; bgcolor="white"; pad=0.3; nodesep=0.55; ranksep=0.75; splines=true; labelloc=t; fontname="Inter"; fontsize=16; label=<<B>Mapa de Contexto (DDD) — MusicVibe</B>>;
+id [shape=box style="filled,rounded" fillcolor="#1168bd" color="#0b4884" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>identity</B><BR/><FONT POINT-SIZE="9">[Bounded Context]</FONT><BR/><BR/><FONT POINT-SIZE="9">User, autenticação, perfil</FONT>>];
+cat [shape=box style="filled,rounded" fillcolor="#1168bd" color="#0b4884" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>catalog</B><BR/><FONT POINT-SIZE="9">[Core Domain]</FONT><BR/><BR/><FONT POINT-SIZE="9">Track, TrackStats</FONT>>];
+eng [shape=box style="filled,rounded" fillcolor="#1168bd" color="#0b4884" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>engagement</B><BR/><FONT POINT-SIZE="9">[Core Domain]</FONT><BR/><BR/><FONT POINT-SIZE="9">Like, Comment</FONT>>];
+dis [shape=box style="filled,rounded" fillcolor="#1168bd" color="#0b4884" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>discovery</B><BR/><FONT POINT-SIZE="9">[Read side (CQRS)]</FONT><BR/><BR/><FONT POINT-SIZE="9">Feed, Busca</FONT>>];
+noti [shape=box style="filled,rounded" fillcolor="#2e7d32" color="#1b5e20" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>notification</B><BR/><FONT POINT-SIZE="9">[Novo (Q2)]</FONT><BR/><BR/><FONT POINT-SIZE="9">Notification</FONT>>];
+sk [shape=box style="filled,rounded" fillcolor="#999999" color="#8a8a8a" fontcolor="white" fontname="Inter" fontsize=12 margin="0.18,0.1" width=2.4 label=<<B>shared kernel</B><BR/><BR/><FONT POINT-SIZE="9">Entity, AggregateRoot, DomainEvent,<BR/>EventBus, erros</FONT>>];
+id -> cat [label=<<FONT POINT-SIZE="9">AuthorId (Customer/Supplier)</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+cat -> eng [label=<<FONT POINT-SIZE="9">TrackDeleted (evento)</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+eng -> cat [label=<<FONT POINT-SIZE="9">TrackLiked/Unliked,<BR/>CommentPosted (evento)</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+cat -> dis [label=<<FONT POINT-SIZE="9">TrackUploaded/Updated/Deleted</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+eng -> noti [label=<<FONT POINT-SIZE="9">TrackLiked, CommentPosted</FONT>> fontname="Inter" color="#2e7d32" fontcolor="#333333" style=dashed arrowsize=0.7];
+eng -> cat [label=<<FONT POINT-SIZE="9">TrackDirectory (ACL)<BR/>consulta existência</FONT>> fontname="Inter" color="#555555" fontcolor="#333333" style=dashed arrowsize=0.7];
+}
