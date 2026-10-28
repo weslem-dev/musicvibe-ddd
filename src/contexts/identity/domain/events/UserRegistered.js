@@ -1,0 +1,1 @@
+// Evento: identity.user.registered
